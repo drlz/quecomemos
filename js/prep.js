@@ -29,13 +29,15 @@ var produccion = null, tortilla = null, countryList = null, countriesCoords = nu
       fin.productos = productos;
       fin.countriesCoords = processCoordList(countriesCoords);
       console.log(fin);
-      //document.getElementById('json').textContent = JSON.stringify(fin);
-      /* PRINT COORDS CSV*/
+      document.getElementById('json').textContent = JSON.stringify(fin);
+      
+      /* PRINT COORDS CSV
       var CSV = '';
       for (var i = 0; i < fin.countriesCoords.length; i++){
         CSV += '"' + fin.countriesCoords[i].name + '","' + fin.countriesCoords[i].x + '","' + fin.countriesCoords[i].y + '"\n';
       }
       console.log(CSV)
+      */
 
     }
   },
