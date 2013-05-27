@@ -157,7 +157,7 @@ function jakController ($scope, $http, $location) { //controller!
           //$scope.emptyActiveProds(); ##todo clean menu selections
           $scope.data.productos[i].active = true;
         }
-      }
+      } 
     }
     if (tipo == 'year'){
       $scope.env.activeYear = value;
@@ -181,7 +181,7 @@ function jakController ($scope, $http, $location) { //controller!
   $scope.d3Map = function(){
 
 //console.log($scope.activeProd.imp[2010])
-
+/* pinta coirclos
     $scope.svg.obj.selectAll("circle")
        .data(getArray($scope.env.activeProd.imp[$scope.env.activeYear]))
        .enter()
@@ -201,10 +201,6 @@ function jakController ($scope, $http, $location) { //controller!
           return null;
        })
        .attr("r", '5')
-      /* .attr("r", function(d) {
-          console.log(d);
-          return null;        
-       })*/
        .style("fill", "yellow")
        .style("opacity", 0.65)
        .on("mouseover", function(d) {console.log(d3.select(this))
@@ -230,7 +226,7 @@ function jakController ($scope, $http, $location) { //controller!
          
           //Remove the tooltip
           d3.select("#tooltip").remove();
-        })
+        })*/
   };
 }
 

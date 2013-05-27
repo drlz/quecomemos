@@ -52,15 +52,17 @@
       <div ng-show="data.importsTotal[env.activeProd.name]">
         <h2>Importación/exportación:</h2>
         <div ng-repeat="(year,val) in data.importsTotal[env.activeProd.name].totalImpWeig">
-          {{year}}: Total importacion: {{ val | number }} ({{data.importsTotal[env.activeProd.name].totalImpVal[year] | number }}$), 
-          total exportación: {{ data.importsTotal[env.activeProd.name].totalExpWeig[year] | number }}
+          {{year}}: Total importacion: {{ val | number }} ({{data.importsTotal[env.activeProd.name].totalImpVal[year] | number }}$)
+          <span ng-show="data.importsTotal[env.activeProd.name].totalExpWeig[year]">, total exportación: {{ data.importsTotal[env.activeProd.name].totalExpWeig[year] | number }}
           ({{ data.importsTotal[env.activeProd.name].totalExpVal[year] | number }}$)
+          </span>
         </div>
       </div>
       <div id="basic-graph"></div>
       <div class="prod-data wk-col-50" ng-show="env.activeProd.producc.prod">
         <h2>Produccion:</h2>
         <div ng-repeat="(year, prodYear) in env.activeProd.producc.prod">Año {{ year }}: {{ prodYear | number }} miles de Toneladas</div>
+        <div id="#prodgraph"></div>
       </div>
     </div>
   </div> <!-- #main-container -->
