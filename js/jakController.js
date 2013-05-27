@@ -84,8 +84,8 @@ function jakController ($scope, $http, $location) { //controller!
 
   $scope.startProcess = function(){
     $scope.env.loading = false;
-     console.log($scope.data);
     $scope.data.importsTotal = $scope.getImportsTotals();
+     console.log($scope.data);
     //init
   };
 
@@ -116,7 +116,7 @@ function jakController ($scope, $http, $location) { //controller!
         }
       }
       // TOTAL
-        //
+        // ToTAL BY PRODUCT
       for(var prod in total){
         var totalImpVal = {}, totalImpWeig = {};
         for(var country in total[prod].imp){
@@ -143,8 +143,9 @@ function jakController ($scope, $http, $location) { //controller!
         total[prod].totalExpVal = totalExpVal;
         total[prod].totalExpWeig = totalExpWeig;
       }
+        // ToTAL BY YEAR
     }
-    console.log(total);
+    return total;
   }
 
   $scope.updateData = function(tipo, value){

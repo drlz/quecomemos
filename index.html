@@ -19,8 +19,7 @@
 </head>
 <body ng-app="jak" ng-controller="jakController">
   <div class="container">
-      <h1>{{ env.activeProd.name }} - {{ env.activeYear }}</h1>
-    <div id="main" class="wrapper clearfix">
+    <div id="maingraph" class="wrapper clearfix">
       <div id="sidebar">
         <a href="#" class="js-toggleSidebar">Filtros</a>
         <div class="js-toggle">
@@ -48,16 +47,22 @@
       <div id="graph">
       </div>
     </div> <!-- #main -->
-    <div id="basic-graph"></div>
-    <div class="prod-data wk-col-50" ng-show="env.activeProd.producc.prod">
-      <h2>Produccion:</h2>
-      <div ng-repeat="(year, prodYear) in env.activeProd.producc.prod">Año {{ year }}: {{ prodYear | number }} miles de Toneladas</div>
+    <div id="main" ng-show="env.activeProd">
+      <h1>{{ env.activeProd.name }}</h1>
+      <div ng-show="data.importsTotal[env.activeProd.name]">
+        <h2>Importación/exportación:</h2>
+        <div ng-repeat="(year,val) in data.importsTotal[env.activeProd.name].totalImpWeig">
+          {{year}}: Total importacion: {{ val | number }} ({{data.importsTotal[env.activeProd.name].totalImpVal[year] | number }}$), 
+          total exportación: {{ data.importsTotal[env.activeProd.name].totalExpWeig[year] | number }}
+          ({{ data.importsTotal[env.activeProd.name].totalExpVal[year] | number }}$)
+        </div>
+      </div>
+      <div id="basic-graph"></div>
+      <div class="prod-data wk-col-50" ng-show="env.activeProd.producc.prod">
+        <h2>Produccion:</h2>
+        <div ng-repeat="(year, prodYear) in env.activeProd.producc.prod">Año {{ year }}: {{ prodYear | number }} miles de Toneladas</div>
+      </div>
     </div>
-    <div class="prod-imp wk-col-50" ng-show="env.activeProd.imp[env.activeYear]">
-      <h2>Importaciones</h2>
-      <div ng-repeat="county in activeProd.imp[env.activeYear]">{{ county.name }}: {{  county.Netweight | number}} miles de Toneladas</div>
-    </div>
-    {{env.activeProd}}
   </div> <!-- #main-container -->
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
