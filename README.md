@@ -9,8 +9,8 @@ Proyecto resultado del Hackathon de periodismo de datos de mayo del 2013 en el M
 ------------------------------------------------------
 http://periodismodatos.okfn.es/hackathonproyecto-2-madrid-que-se-comeria-en-espana-si-no-hubiera-importaciones/
 
-Cristina Fernández Álvarez (Periodista)
-David Ruiz López (Desarrollador)
-Jesús Escudero Martínez (Periodista)
-Daniele Grasso (Periodista)
+- Cristina Fernández Álvarez (Periodista)
+- David Ruiz López (Desarrollador)
+- Jesús Escudero Martínez (Periodista)
+- Daniele Grasso (Periodista)
 
