@@ -1,0 +1,9 @@
+.wrapper { width: 960px; margin: 0 auto; }
+#main { margin: 40px 0; }
+.wk-col-50 { width: 50%; float: left;}
+#sidebar { width: 200px; float: left; margin-right: 40px; }
+	#sidebar .col-prod, #sidebar .col-year { float: left; width: 100px; }
+		#sidebar a.selected { color: red; }
+#sidebar-main { width: 720px; float: left; }
+
+li { list-style: none; }
