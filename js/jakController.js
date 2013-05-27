@@ -28,7 +28,7 @@ function jakController ($scope, $http, $location) { //controller!
 
     //Load in GeoJSON data
     d3.json("data/countries-hires.json", function(json) {
-      console.log(json);
+      //console.log(json);
       
       //Bind data and create one path per GeoJSON feature
       svg.selectAll("path")
@@ -85,8 +85,67 @@ function jakController ($scope, $http, $location) { //controller!
   $scope.startProcess = function(){
     $scope.env.loading = false;
      console.log($scope.data);
+    $scope.data.importsTotal = $scope.getImportsTotals();
     //init
   };
+
+  $scope.getImportsTotals = function(){
+    var total = {};
+      // Group by product
+    for(prod in $scope.data.productos){
+      if(!total[$scope.data.productos[prod].name]) total[$scope.data.productos[prod].name] = {};
+      var prodData = total[$scope.data.productos[prod].name];
+      prodData.imp = {};
+      if($scope.data.productos[prod]) {
+        for(var year in $scope.data.productos[prod].imp){
+          for(var country in $scope.data.productos[prod].imp[year]){
+            if(!prodData.imp[country]) prodData.imp[country] = {};
+            prodData.imp[country][year] = {};
+            prodData.imp[country][year] = $scope.data.productos[prod].imp[year][country];
+          };
+        }
+      }
+      prodData.exp = {};
+      if($scope.data.productos[prod]) {
+        for(var year in $scope.data.productos[prod].exp){
+          for(var country in $scope.data.productos[prod].exp[year]){
+            if(!prodData.exp[country]) prodData.exp[country] = {};
+            prodData.exp[country][year] = {};
+            prodData.exp[country][year] = $scope.data.productos[prod].exp[year][country];
+          };
+        }
+      }
+      // TOTAL
+        //
+      for(var prod in total){
+        var totalImpVal = {}, totalImpWeig = {};
+        for(var country in total[prod].imp){
+          for(var year in total[prod].imp[country]){
+            if(!totalImpVal[year]) totalImpVal[year] = 0;
+            if(!totalImpWeig[year]) totalImpWeig[year] = 0;
+            totalImpVal[year] += parseFloat(total[prod].imp[country][year].value);
+            totalImpWeig[year] += parseFloat(total[prod].imp[country][year].Netweight);
+          }
+        }
+        total[prod].totalImpVal = totalImpVal;
+        total[prod].totalImpWeig = totalImpWeig;
+      }
+      for(var prod in total){
+        var totalExpVal = {}, totalExpWeig = {};
+        for(var country in total[prod].exp){
+          for(var year in total[prod].exp[country]){
+            if(!totalExpVal[year]) totalExpVal[year] = 0;
+            if(!totalExpWeig[year]) totalExpWeig[year] = 0;
+            totalExpVal[year] += parseFloat(total[prod].exp[country][year].value);
+            totalExpWeig[year] += parseFloat(total[prod].exp[country][year].Netweight);
+          }
+        }
+        total[prod].totalExpVal = totalExpVal;
+        total[prod].totalExpWeig = totalExpWeig;
+      }
+    }
+    console.log(total);
+  }
 
   $scope.updateData = function(tipo, value){
     //generate graph 4 product
