@@ -14,3 +14,8 @@ http://periodismodatos.okfn.es/hackathonproyecto-2-madrid-que-se-comeria-en-espa
 - Jesús Escudero Martínez (Periodista)
 - Daniele Grasso (Periodista)
 
+## Info
+The app is based in AngularJs and d3js for the svg output
+
+**index.html** - main app
+**prep.html** - Preprocess all the sources and generate a compound JSON file 
