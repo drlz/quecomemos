@@ -57,6 +57,7 @@
       <h2>Importaciones</h2>
       <div ng-repeat="county in activeProd.imp[env.activeYear]">{{ county.name }}: {{  county.Netweight | number}} miles de Toneladas</div>
     </div>
+    {{env.activeProd}}
   </div> <!-- #main-container -->
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
