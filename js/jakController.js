@@ -6,33 +6,52 @@ jak = angular.module('jak',[] )
   });
 
 function jakController ($scope, $http, $location) { //controller!
-  
+    //some basic interactions
+  $('.js-toggleSidebar').bind('click', function(){ $(this).siblings('.js-toggle').slideToggle(400); return false; });
+
   $scope.startSvg = function(){
     //Define map projection
-    projection = d3.geo.mercator()
-     .translate([$scope.svg.width/2, $scope.svg.height/2])
-     .scale([500]);
+    projection = d3.geo.equirectangular()
+      .translate([$scope.svg.width/2, $scope.svg.height/2])
+      .scale([200]);
 
     //Create SVG element
-    var svg = d3.select("#graph")
+    var svg = $scope.svg.dContainer
       .append("svg")
       .attr("width", $scope.svg.width)
-      .attr("height", $scope.svg.height);
+      .attr("height", $scope.svg.height)
+      .attr("fill", 'blue');
 
     //Define path generator
     path = d3.geo.path()
-             .projection(projection);
+    .projection(projection);
 
     //Load in GeoJSON data
-    d3.json("data/oceans.json", function(json) {
+    d3.json("data/countries-hires.json", function(json) {
+      console.log(json);
       
       //Bind data and create one path per GeoJSON feature
       svg.selectAll("path")
-         .data(json.features)
-         .enter()
-         .append("path")
-         .attr("d", path)
-         .style("fill", "steelblue");
+        .data(json.features)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .style("fill", "white")
+        .style('stroke', '#ccc')
+        .attr("class", function(d){
+          return d.properties.ADM0_A3;
+        })
+        .on('mouseover', function(d){
+          var dElm = d3.select(this),
+            mousePos = d3.mouse($scope.svg.container);
+          dElm.style('fill', '#FDF2A8');
+            //place tooltip and display
+          $('#graph-note').html(d.properties.NAME).css({'left': mousePos[0],'top': mousePos[1]}).stop(true, true).fadeIn(200);
+        })
+        .on('mouseout', function(d){
+          d3.select(this).style('fill', '#fff');
+          $('#graph-note').stop(true, true).fadeOut(200);
+        });
 
     });
 
@@ -43,8 +62,10 @@ function jakController ($scope, $http, $location) { //controller!
   $scope.years= ['1990', '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010'];
   
   $scope.svg = {};
-  $scope.svg.width = 400;
-  $scope.svg.height = 400;
+  $scope.svg.container = document.getElementById('graph');
+  $scope.svg.dContainer = d3.select("#graph");
+  $scope.svg.width = 960;
+  $scope.svg.height = 600;
   $scope.svg.obj = $scope.startSvg();
 
   $scope.env = {};
@@ -161,3 +182,4 @@ var getArray = function(object){
   }
   return arr;
 }
+

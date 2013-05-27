@@ -4,74 +4,63 @@
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-	<title>Hackaton 2013 Madrid</title>
-	<meta name="description" content="proyectazo">
-	<meta name="author" content="equipazo">
+  <title>Hackaton 2013 Madrid</title>
+  <meta name="description" content="proyectazo">
+  <meta name="author" content="equipazo">
 
-	<meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-	<link rel="stylesheet" href="css/bootstrap.min.css">
-	<link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
 
 </head>
 <body ng-app="jak" ng-controller="jakController">
-	<div class="navbar navbar-fixed-top">
-		<div class="navbar-inner">
-			<div class="container">
-				<a class="brand" href="#">¿Qué se comería en España...?</a>
-			</div>
-		</div>
-	</div>
-	<div class="container">
-		<ul class="carousel">
-			<li>
-			<img src="" alt="">
-			</li>
-		</ul>
-		<div id="main" class="wrapper clearfix">
-			<div id="sidebar">
-				<div class="col-year" >
-					<h4>Años</h4>
-					<ul ng-cloak>
-						<li ng-repeat="year in years | orderBy:years:reverse">
-							<a href='#' class="{{ (env.activeYear == year) && 'selected' || '' }}" 
-								ng-click="updateData('year', year)" title="Años del producto">{{ year }}</a>
-						</li>
-					</ul>
-				</div>
-				<div class="col-prod" >
-					<h4>Productos</h4>
-					<ul ng-cloak>
-						<li  ng-repeat="prod in data.productos">
-							<a href='#' ng-click="updateData('prod', prod.name)" title="Info del producto"
-	  							class="{{ (env.activeProd.name == prod.name) && 'selected' || '' }}" >{{ prod.name }}</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div id="sidebar-main">
-				<h1>{{ env.activeProd.name }} - {{ env.activeYear }}</h1>
-				<div id="graph"></div>
-				<div class="prod-data wk-col-50" ng-show="env.activeProd.producc.prod">
-					<h2>Produccion:</h2>
-					<div ng-repeat="(year, prodYear) in env.activeProd.producc.prod">Año {{ year }}: {{ prodYear | number }} miles de Toneladas</div>
-				</div>
-				<div class="prod-imp wk-col-50" ng-show="env.activeProd.imp[env.activeYear]">
-					<h2>Importaciones</h2>
-					<div ng-repeat="county in activeProd.imp[env.activeYear]">{{ county.name }}: {{  county.Netweight | number}} miles de Toneladas</div>
-				</div>
-				<div id="prod">
-				</div>
-			</div>
-		</div> <!-- #main -->
-	</div> <!-- #main-container -->
-{{ env.activeProd | json }}
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-	<script src="./js/lib/d3.v3.js"></script>
-	<script src="./js/jakController.js"></script>
+  <div class="container">
+      <h1>{{ env.activeProd.name }} - {{ env.activeYear }}</h1>
+    <div id="main" class="wrapper clearfix">
+      <div id="sidebar">
+        <a href="#" class="js-toggleSidebar">Filtros</a>
+        <div class="js-toggle">
+          <div class="col-year" >
+            <h4>Años</h4>
+            <ul ng-cloak>
+              <li ng-repeat="year in years | orderBy:years:reverse">
+                <a href='#' class="{{ (env.activeYear == year) && 'selected' || '' }}" 
+                  ng-click="updateData('year', year)" title="Años del producto">{{ year }}</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-prod" >
+            <h4>Productos</h4>
+            <ul ng-cloak>
+              <li  ng-repeat="prod in data.productos">
+                <a href='#' ng-click="updateData('prod', prod.name)" title="Info del producto"
+                    class="{{ (env.activeProd.name == prod.name) && 'selected' || '' }}" >{{ prod.name }}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="graph-note">Hi you all</div>
+      <div id="graph">
+      </div>
+    </div> <!-- #main -->
+    <div id="basic-graph"></div>
+    <div class="prod-data wk-col-50" ng-show="env.activeProd.producc.prod">
+      <h2>Produccion:</h2>
+      <div ng-repeat="(year, prodYear) in env.activeProd.producc.prod">Año {{ year }}: {{ prodYear | number }} miles de Toneladas</div>
+    </div>
+    <div class="prod-imp wk-col-50" ng-show="env.activeProd.imp[env.activeYear]">
+      <h2>Importaciones</h2>
+      <div ng-repeat="county in activeProd.imp[env.activeYear]">{{ county.name }}: {{  county.Netweight | number}} miles de Toneladas</div>
+    </div>
+  </div> <!-- #main-container -->
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  <script src="./js/lib/d3.v3.js"></script>
+  <script src="./js/jakController.js"></script>
 </body>
 </html>
