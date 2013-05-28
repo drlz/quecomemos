@@ -28,7 +28,7 @@ function jakController ($scope, $http, $location) { //controller!
     path = d3.geo.path().projection(projection);
 
     //Load in GeoJSON data
-    d3.json("data/countries-hires.json", function(json) {
+    d3.json("./data/countries-hires.json", function(json) {
       //Draws the map
 
       $scope.svg.mapa.datos = json;
@@ -54,7 +54,7 @@ function jakController ($scope, $http, $location) { //controller!
 
   $scope.updateMap = function(){
     if(!$scope.env.activeProd.imp[$scope.env.activeYear]) return;
-    
+
     for(var feat in $scope.svg.mapa.datos.features){
       //console.log($scope.svg.mapa.datos.features[feat]);
       var countryName = $scope.svg.mapa.datos.features[feat].properties.NAME
@@ -102,7 +102,7 @@ function jakController ($scope, $http, $location) { //controller!
   $scope.env.loading = true;
 
     //load data
-  $http.get('/data/final.json').success(function(data) {
+  $http.get('./data/final.json').success(function(data) {
     $scope.data = data;
     $scope.startProcess();
     //console.log($scope.data)
