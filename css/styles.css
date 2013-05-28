@@ -15,3 +15,10 @@ li { list-style: none; }
   #graph-note { position: absolute; top: 0;left: 0; padding: 20px 40px; display: none;
     background: rgba(0,0,0,0.1); text-align: center; }
   #graph { background: #F5FAFF; }
+
+.prodAxis { font-size: 0.8em; }
+  .prodAxis line, .prodAxis .domain, .prodAxis path, .temporary line { fill: none; stroke-width: 1px; stroke: #ccc; shape-rendering: crispEdges; }
+.prodDot { fill: #F5FAFF; stroke-width: 1px; stroke: #ccc; }
+.prodInfo { display: none; font-size: 1em; }
+  .prodInfoAct { display: block; }
+  .prodAxis path, .prodAxis line { fill: none; stroke: black; }

@@ -23,14 +23,11 @@ function jakController ($scope, $http, $location) { //controller!
       .attr("fill", 'blue');
 
     //Define path generator
-    path = d3.geo.path()
-    .projection(projection);
+    path = d3.geo.path().projection(projection);
 
     //Load in GeoJSON data
     d3.json("data/countries-hires.json", function(json) {
-      //console.log(json);
-      
-      //Bind data and create one path per GeoJSON feature
+      //Draws the map
       svg.selectAll("path")
         .data(json.features)
         .enter()
@@ -38,12 +35,9 @@ function jakController ($scope, $http, $location) { //controller!
         .attr("d", path)
         .style("fill", "white")
         .style('stroke', '#ccc')
-        .attr("class", function(d){
-          return d.properties.ADM0_A3;
-        })
+        .attr("class", function(d){ return d.properties.ADM0_A3; })
         .on('mouseover', function(d){
-          var dElm = d3.select(this),
-            mousePos = d3.mouse($scope.svg.container);
+          var dElm = d3.select(this), mousePos = d3.mouse($scope.svg.container);
           dElm.style('fill', '#FDF2A8');
             //place tooltip and display
           $('#graph-note').html(d.properties.NAME).css({'left': mousePos[0],'top': mousePos[1]}).stop(true, true).fadeIn(200);
@@ -52,7 +46,6 @@ function jakController ($scope, $http, $location) { //controller!
           d3.select(this).style('fill', '#fff');
           $('#graph-note').stop(true, true).fadeOut(200);
         });
-
     });
 
     return svg;
@@ -157,14 +150,15 @@ function jakController ($scope, $http, $location) { //controller!
           //$scope.emptyActiveProds(); ##todo clean menu selections
           $scope.data.productos[i].active = true;
         }
-      } 
+      }
+      $scope.drawProdGraph();
     }
     if (tipo == 'year'){
       $scope.env.activeYear = value;
     }
 
     if($scope.env.activeYear && $scope.env.activeProd) { // hay producto y año => DIBUJA
-      $scope.d3Map();
+      //$scope.d3Map();
     }
   };
 
@@ -178,57 +172,99 @@ function jakController ($scope, $http, $location) { //controller!
     return null;
   };
 
-  $scope.d3Map = function(){
+  $scope.drawProdGraph = function (){
+    if(!$scope.env.activeProd.producc) return;
 
-//console.log($scope.activeProd.imp[2010])
-/* pinta coirclos
-    $scope.svg.obj.selectAll("circle")
-       .data(getArray($scope.env.activeProd.imp[$scope.env.activeYear]))
-       .enter()
-       .append("circle")
-       .attr("cx", function(d) {
-          var coords = $scope.getCountryCoords(d.name);
-          if(coords && coords.x && coords.y) { 
-  //          console.log(coords)
-    //        console.log(projection([coords.y, coords.x]))
-            return projection([coords.y, coords.x])[0]; 
-          } 
-          return null;
-       })
-       .attr("cy", function(d) {
-          var coords = $scope.getCountryCoords(d.name)
-          if(coords && coords.y && coords.x) { return projection([coords.y, coords.x])[1]; } 
-          return null;
-       })
-       .attr("r", '5')
-       .style("fill", "yellow")
-       .style("opacity", 0.65)
-       .on("mouseover", function(d) {console.log(d3.select(this))
+      //Width and height
+      var w = 500, h = 300, padding = 50;
+      $scope.svg.prodGraph = {};
+      
+      var dataset = getYearsArray($scope.env.activeProd.producc.prod);
 
-          //Get this bar's x/y values, then augment for the tooltip
-          var xPosition = parseFloat(d3.select(this).attr("x"));
-          var yPosition = parseFloat(d3.select(this).attr("y"));
+      //Create scale functions
+      var xScale = d3.scale.linear()
+       .domain([d3.min(dataset, function(d) { return d.year; }),
+          d3.max(dataset, function(d) { return d.year; })
+        ])
+       .range([padding, w - padding * 2]);
 
-          //Create the tooltip label
-          $scope.svg.obj.append("text")
-             .attr("id", "tooltip")
-             .attr("x", xPosition)
-             .attr("y", yPosition)
-             .attr("text-anchor", "middle")
-             .attr("font-family", "sans-serif")
-             .attr("font-size", "11px")
-             .attr("font-weight", "bold")
-             .attr("fill", "black")
-             .text( 'hola');
+      var yScale = d3.scale.linear()
+       .domain([0, d3.max(dataset, function(d) { return d.val; })])
+       .range([h - padding, padding]);
 
-       })
-       .on("mouseout", function() {
-         
-          //Remove the tooltip
-          d3.select("#tooltip").remove();
-        })*/
-  };
-}
+      //Create SVG element
+      $scope.svg.prodGraph.prodGraph = d3.select("#prodgraph svg")
+        .attr("width", w)
+        .attr("height", h);
+
+      //Create circles
+      $scope.svg.prodGraph.prodGraph.selectAll("circle")
+        .data(dataset)
+        .enter()
+        .append("circle")
+        .attr("class", "prodDot")
+        .attr("cx", function(d) { return xScale(d.year); })
+        .attr("cy", function(d) { return yScale(d.val); })
+        .attr("r", 5)
+        .on('mouseover', function(d){
+          var punto = d3.select(this).style('fill', '#FFC200'),
+          temporal = $scope.svg.prodGraph.prodGraph.append('g').attr('class', 'temporary');
+          temporal.append('text')
+            .attr('x',parseInt(punto.attr('cx')) + 20).attr('y',punto.attr('cy'))
+            .text(function(){ return 'Producción ' + d.year + ': ' + d.val; });
+          temporal.append('line').attr({'x1': padding, 'x2': punto.attr('cx'), 'y1': punto.attr('cy'), 'y2': punto.attr('cy')});
+          temporal.append('line').attr({'x1': punto.attr('cx'), 'x2': punto.attr('cx'), 'y1': h - padding, 'y2': punto.attr('cy')});
+        })
+        .on('mouseout', function(d){
+          d3.select(this).style('fill', '#F5FAFF');
+          $scope.svg.prodGraph.prodGraph.selectAll('.temporary').remove();
+        });;
+      
+      $scope.svg.prodGraph.prodGraph.selectAll("text")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .text(function(d) { return d.val; })
+        .attr("x", function(d) { return xScale(d.year) + 10; })
+        .attr("y", function(d) { return yScale(d.val); })
+        .attr("font-family", "arial,sans-serif")
+        .attr("font-size", "8px")
+        .attr("fill", "#ccc")
+        .attr("class", "prodInfo");
+        
+      //Define X axis
+      xAxis = d3.svg.axis()
+        .scale(xScale)
+        .orient("bottom")
+        .ticks(5);
+
+      //Define Y axis
+      yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient("left")
+        .ticks(5);
+
+      //Display axis
+      $scope.svg.prodGraph.prodGraph.selectAll('.prodAxis').remove();
+
+      $scope.svg.prodGraph.prodGraph.append("g")
+        .attr("class", "prodAxis")
+        .attr("transform", "translate(0," + (h - padding) + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", function(d) { return "rotate(-65)"; });;
+
+      //Create Y axis
+      $scope.svg.prodGraph.prodGraph.append("g")
+        .attr("class", "prodAxis")
+        .attr("transform", "translate(" + padding + ",0)")
+        .call(yAxis);
+    };
+
+  }
 
 var getArray = function(object){
   var arr = [];
@@ -238,4 +274,13 @@ var getArray = function(object){
   }
   return arr;
 }
-
+var getYearsArray = function(object){
+  var arr = [];
+  for(elm in object){
+    var obj = {};
+    obj['year'] = elm;
+    obj['val'] = object[elm];
+    arr.push(obj);
+  }
+  return arr;
+}
