@@ -70,8 +70,8 @@
       <div id="prodlist" ng-show="env.activeProd.producc.prod">
         <h2>Produccion:</h2>
         <div class="prod-data wk-col-50">
+          <div ng-show="env.activeProd.producc.prod[env.activeYear]">Año {{ env.activeYear }}: {{ env.activeProd.producc.prod[env.activeYear] | number }} miles de Toneladas</div>
           <div id="prodgraph"><svg></svg></div>
-          <div ng-repeat="(year, prodYear) in env.activeProd.producc.prod">Año {{ year }}: {{ prodYear | number }} miles de Toneladas</div>
         </div>
         <div ng-hide="env.activeProd.producc.prod">
           <h4>No disponemos de datos de producción para este producto.</h4>

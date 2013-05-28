@@ -16,7 +16,9 @@ function jakController ($scope, $http, $location) { //controller!
       .scale([200]);
 
     //Create SVG element
-    var svg = $scope.svg.dContainer
+    $scope.svg.mapa = {};
+
+    $scope.svg.mapa.draw = $scope.svg.dContainer
       .append("svg")
       .attr("width", $scope.svg.width)
       .attr("height", $scope.svg.height)
@@ -28,14 +30,14 @@ function jakController ($scope, $http, $location) { //controller!
     //Load in GeoJSON data
     d3.json("data/countries-hires.json", function(json) {
       //Draws the map
-      svg.selectAll("path")
+
+      $scope.svg.mapa.datos = json;
+
+      $scope.svg.mapa.draw.selectAll("path")
         .data(json.features)
         .enter()
         .append("path")
-        .attr("d", path)
-        .style("fill", "white")
-        .style('stroke', '#ccc')
-        .attr("class", function(d){ return d.properties.ADM0_A3; })
+        .attr({'d': path, 'fill': 'white', 'stroke': '#ccc', 'class': function(d){ return d.properties.ADM0_A3; } })
         .on('mouseover', function(d){
           var dElm = d3.select(this), mousePos = d3.mouse($scope.svg.container);
           dElm.style('fill', '#FDF2A8');
@@ -48,8 +50,41 @@ function jakController ($scope, $http, $location) { //controller!
         });
     });
 
-    return svg;
   }
+
+  $scope.updateMap = function(){
+    if(!$scope.env.activeProd.imp[$scope.env.activeYear]) return;
+    
+    for(var feat in $scope.svg.mapa.datos.features){
+      //console.log($scope.svg.mapa.datos.features[feat]);
+      var countryName = $scope.svg.mapa.datos.features[feat].properties.NAME
+      if($scope.env.activeProd.imp[$scope.env.activeYear] && $scope.env.activeProd.imp[$scope.env.activeYear][countryName]){
+        $scope.svg.mapa.datos.features[feat]['properties'].expVal = $scope.env.activeProd.imp[$scope.env.activeYear][countryName]['value'];
+        $scope.svg.mapa.datos.features[feat]['properties'].expWei = $scope.env.activeProd.imp[$scope.env.activeYear][countryName]['Netweight'];
+      }
+    }
+
+    var importDataArray = getCountryArrayYear($scope.data.importsTotal[$scope.env.activeProd['name']]['imp'], $scope.env.activeYear);
+
+      //Create scale functions
+    var colorScale = d3.scale.linear()
+     .domain([d3.min(importDataArray, function(d) { return parseInt(d.val); }),
+        d3.max(importDataArray, function(d) { return parseInt(d.val); })])
+     .range([0,1]);
+
+    $scope.svg.mapa.draw.selectAll("path").data($scope.svg.mapa.datos.features)
+      .attr({'fill': function(d){
+        if($scope.data.importsTotal[$scope.env.activeProd['name']]['imp'][d.properties.NAME]) {
+          var impVal = $scope.data.importsTotal[$scope.env.activeProd['name']]['imp'][d.properties.NAME][$scope.env.activeYear]['value'];
+          return d3.rgb('#FAF3E5').darker(colorScale(impVal));
+        };
+        return 'white'; 
+      }});
+
+    //console.log($scope.svg.mapa.draw.data());
+    //console.log($scope.svg.mapa.datos);
+    //console.log($scope.env.activeProd.imp[$scope.env.activeYear]);
+  };
 
     //define some initial values
   $scope.years= ['1990', '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010'];
@@ -160,6 +195,7 @@ function jakController ($scope, $http, $location) { //controller!
     if($scope.env.activeYear && $scope.env.activeProd) { // hay producto y año => DIBUJA
       //$scope.d3Map();
       $scope.drawImpExpGraph();
+      $scope.updateMap();
     }
 
   };
@@ -355,7 +391,7 @@ var getArray = function(object){
 };
 var getYearsArray = function(object){
   var arr = [];
-  for(elm in object){
+  for(var elm in object){
     var obj = {};
     obj['year'] = elm;
     obj['val'] = object[elm];
@@ -366,7 +402,7 @@ var getYearsArray = function(object){
 
 var getCountryArray = function(object){
   var arr = [];
-  for(elm in object){
+  for(var elm in object){
     if(elm != 'World') {
       var obj = {};
       obj['name'] = elm;
@@ -376,4 +412,24 @@ var getCountryArray = function(object){
     }
   }
   return arr;
-}
+};
+
+var getCountryArrayYear = function(object, year){console.log(object);console.log(year)
+  var arr = [], translations= { //translations isn'¡t working :p
+    'France, Monaco': 'France'
+  };
+  for(var elm in object){ 
+    if(elm != 'World') {
+      var obj = {};
+      if(translations[elm]) {
+        obj['name'] = translations[elm];
+      } else {
+        obj['name'] = elm;
+      }
+      obj['val'] = object[elm][year].value;
+      obj['peso'] = object[elm][year].Netweight;
+      arr.push(obj);
+    }
+  }
+  return arr;
+};
