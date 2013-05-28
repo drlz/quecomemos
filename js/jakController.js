@@ -159,7 +159,9 @@ function jakController ($scope, $http, $location) { //controller!
 
     if($scope.env.activeYear && $scope.env.activeProd) { // hay producto y año => DIBUJA
       //$scope.d3Map();
+      $scope.drawImpExpGraph();
     }
+
   };
 
   $scope.getCountryCoords = function(countryName){
@@ -172,13 +174,98 @@ function jakController ($scope, $http, $location) { //controller!
     return null;
   };
 
+  $scope.drawImpExpGraph = function(){
+    if(!($scope.env.activeProd.producc || $scope.env.activeYear)) return;
+
+    //Width and height 
+    var w = 300, h = 250, padding = 50;
+    if($scope.svg.ExpGraph) $scope.svg.ExpGraph.graph.selectAll('g').remove();
+    $scope.svg.ExpGraph = {};
+    if($scope.svg.ImpGraph) $scope.svg.ImpGraph.graph.selectAll('g').remove();
+    $scope.svg.ImpGraph = {};
+
+    var outerRadius = w / 2;
+    var innerRadius = w / 3;
+    var arc = d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius);
+
+    var pie = d3.layout.pie().value(function(d){ return d.val})
+      .startAngle(-Math.PI/2).endAngle(Math.PI/2);
+
+        //start import graph
+    $scope.svg.ImpGraph.graph = d3.select("#ImpGraph svg").attr("width", w + 50).attr("height", h).append('g');
+
+    //Set up groups
+    var arcsImp = $scope.svg.ImpGraph.graph.selectAll("g.arc")
+      .data(pie(getCountryArray($scope.env.activeProd.imp[$scope.env.activeYear]))).enter()
+      .append("g").attr({"class": "arc", "transform": "translate(" + outerRadius + "," + outerRadius + ")"});
+
+    //Draw arc paths
+    arcsImp.append("path")
+      .attr({
+        'fill': function(d, i) { return d3.rgb('#FAF3E5').darker(i*0.02); },
+        'stroke': '#ccc', 'd': arc, 'stroke-width': '1px'
+      })
+      .on('mouseover', function(d){
+        var mousePos = d3.mouse(document.getElementById('ImpGraph'))
+        temporal = $scope.svg.ImpGraph.graph.append('g').attr('class', 'temporary');
+        temporal.append('text')
+          .attr({'x': mousePos[0], 'y': mousePos[1]})
+          .text(function(){ if(!$scope.isBigEnough(d.startAngle, d.endAngle)) return d.data.name; });
+      })
+      .on('mouseout', function(d){
+        $scope.svg.ImpGraph.graph.selectAll('.temporary').remove();
+      });
+
+    //Labels
+    arcsImp.append("text")
+        .attr({"transform": function(d) { return "translate(" + arc.centroid(d) + ")"; }, "text-anchor": "middle" })
+        .text(function(d) { if($scope.isBigEnough(d.startAngle, d.endAngle)) return d.data.name; });
+
+
+    //start EXPORT graph
+    $scope.svg.ExpGraph.graph = d3.select("#ExpGraph svg").attr("width", w + 50).attr("height", h).append('g');
+
+    //Set up groups
+    var arcsExp = $scope.svg.ExpGraph.graph.selectAll("g.arc")
+      .data(pie(getCountryArray($scope.env.activeProd.exp[$scope.env.activeYear]))).enter()
+      .append("g").attr({"class": "arc", "transform": "translate(" + outerRadius + "," + outerRadius + ")"});
+
+    //Draw arc paths
+    arcsExp.append("path")
+      .attr({
+        'fill': function(d, i) { return d3.rgb('#FAF3E5').darker(i*0.02); },
+        'stroke': '#ccc', 'd': arc, 'stroke-width': '1px'
+      })
+      .on('mouseover', function(d){
+        var mousePos = d3.mouse(document.getElementById('ExpGraph'))
+        temporal = $scope.svg.ExpGraph.graph.append('g').attr('class', 'temporary');
+        temporal.append('text')
+          .attr({'x': mousePos[0], 'y': mousePos[1]})
+          .text(function(){ if(!$scope.isBigEnough(d.startAngle, d.endAngle)) return d.data.name; });
+      })
+      .on('mouseout', function(d){
+        $scope.svg.ExpGraph.graph.selectAll('.temporary').remove();
+      });
+
+    //Labels
+    arcsExp.append("text")
+        .attr({"transform": function(d) { return "translate(" + arc.centroid(d) + ")"; }, "text-anchor": "middle" })
+        .text(function(d) { if($scope.isBigEnough(d.startAngle, d.endAngle)) return d.data.name; });
+  };
+
+  $scope.isBigEnough = function(initial, fin){
+    piMedios = Math.PI / 4;
+    if(Math.abs((initial + piMedios) - (fin + piMedios)) > (piMedios / 2)) return true;
+    return false;
+  }
+
   $scope.drawProdGraph = function (){
     if(!$scope.env.activeProd.producc) return;
 
       //Width and height
       var w = 500, h = 300, padding = 50;
       $scope.svg.prodGraph = {};
-      
+
       var dataset = getYearsArray($scope.env.activeProd.producc.prod);
 
       //Create scale functions
@@ -218,11 +305,9 @@ function jakController ($scope, $http, $location) { //controller!
         .on('mouseout', function(d){
           d3.select(this).style('fill', '#F5FAFF');
           $scope.svg.prodGraph.prodGraph.selectAll('.temporary').remove();
-        });;
+        });
       
-      $scope.svg.prodGraph.prodGraph.selectAll("text")
-        .data(dataset)
-        .enter()
+      $scope.svg.prodGraph.prodGraph.selectAll("text").data(dataset).enter()
         .append("text")
         .text(function(d) { return d.val; })
         .attr("x", function(d) { return xScale(d.year) + 10; })
@@ -233,16 +318,10 @@ function jakController ($scope, $http, $location) { //controller!
         .attr("class", "prodInfo");
         
       //Define X axis
-      xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient("bottom")
-        .ticks(5);
+      xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5);
 
       //Define Y axis
-      yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient("left")
-        .ticks(5);
+      yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(5);
 
       //Display axis
       $scope.svg.prodGraph.prodGraph.selectAll('.prodAxis').remove();
@@ -273,7 +352,7 @@ var getArray = function(object){
     arr.push(object[elm]);
   }
   return arr;
-}
+};
 var getYearsArray = function(object){
   var arr = [];
   for(elm in object){
@@ -281,6 +360,20 @@ var getYearsArray = function(object){
     obj['year'] = elm;
     obj['val'] = object[elm];
     arr.push(obj);
+  }
+  return arr;
+};
+
+var getCountryArray = function(object){
+  var arr = [];
+  for(elm in object){
+    if(elm != 'World') {
+      var obj = {};
+      obj['name'] = elm;
+      obj['val'] = object[elm].value;
+      obj['peso'] = object[elm].Netweight;
+      arr.push(obj);
+    }
   }
   return arr;
 }

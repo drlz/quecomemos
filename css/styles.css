@@ -22,3 +22,6 @@ li { list-style: none; }
 .prodInfo { display: none; font-size: 1em; }
   .prodInfoAct { display: block; }
   .prodAxis path, .prodAxis line { fill: none; stroke: black; }
+
+#ImpGraph, #ExpGraph { float: left; }
+#importlist { clear: both; }

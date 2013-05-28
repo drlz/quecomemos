@@ -51,11 +51,15 @@
       <h1>{{ env.activeProd.name }}</h1>
       <div ng-show="data.importsTotal[env.activeProd.name]">
         <h2>Importación/exportación:</h2>
-        <div ng-repeat="(year,val) in data.importsTotal[env.activeProd.name].totalImpWeig">
-          {{year}}: Total importacion: {{ val | number }} ({{data.importsTotal[env.activeProd.name].totalImpVal[year] | number }}$)
-          <span ng-show="data.importsTotal[env.activeProd.name].totalExpWeig[year]">, total exportación: {{ data.importsTotal[env.activeProd.name].totalExpWeig[year] | number }}
-          ({{ data.importsTotal[env.activeProd.name].totalExpVal[year] | number }}$)
-          </span>
+        <div id="ImpGraph"><svg></svg></div>
+        <div id="ExpGraph"><svg></svg></div>
+        <div id="importlist">
+          <div ng-repeat="(year,val) in data.importsTotal[env.activeProd.name].totalImpWeig">
+            {{year}}: Total importacion: {{ val | number }} ({{data.importsTotal[env.activeProd.name].totalImpVal[year] | number }}$)
+            <span ng-show="data.importsTotal[env.activeProd.name].totalExpWeig[year]">, total exportación: {{ data.importsTotal[env.activeProd.name].totalExpWeig[year] | number }}
+            ({{ data.importsTotal[env.activeProd.name].totalExpVal[year] | number }}$)
+            </span>
+          </div>
         </div>
       </div>
       <div id="basic-graph"></div>
