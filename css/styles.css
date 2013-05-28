@@ -6,7 +6,7 @@ li { list-style: none; }
 #maingraph { position: relative; margin: 40px 0; border: 1px solid #999; }
   #sidebar { width: 200px; float: left; position: absolute; z-index: 10; font-size: 0.8em; background: rgba(0,0,0,0.1);
       padding: 10px; }
-    #sidebar .js-toggle { display: none; }
+    #sidebar .js-toggle { ; }
     #sidebar .js-toggleSidebar { display: block; }
     #sidebar .col-prod, #sidebar .col-year { float: left; width: 100px; }
       #sidebar a.selected { color: red; }
@@ -24,4 +24,4 @@ li { list-style: none; }
   .prodAxis path, .prodAxis line { fill: none; stroke: black; }
 
 #ImpGraph, #ExpGraph { float: left; }
-#importlist { clear: both; }
+#importlist, #prodlist { clear: both; }
